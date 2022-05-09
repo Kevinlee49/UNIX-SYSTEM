@@ -85,24 +85,27 @@ VI 특징
 - 기본모드에는 명령모드 vs 입력모드
 - 특수모드에는 비주얼모드, 마지막 행 모드
 
+파일 만들기
+vi name.txt
+
 :q! - 저장하지 말고 종료
 :wq - 저장하고 종료하기
 a,i 명령 - 기본입력 , s 도 가능함(뭐지?)
 hjkl - 방향이동키
-줄삭제 dd, 숫자dd
+줄삭제 dd, 숫자dd    , 3dd 하면 3줄 지우는거 마우
 줄복사 yy, 숫자yy
 p, P - 줄 붙여넣기 내가 있는 줄에서 아래로 줄복사한거 붙여넣음, P 는 위로 줄복사한 내용 붙여넣음
 x, X - 칸삭제
 고급입력실습 - A, I
 고급행 이동 - G, 행번호G, :행번호, :$
 
+CTRL + f, b - 페이지 업다운, 페이지 스크롤
 escape 누르기 전 글자지우기 - 백스페이스
 escape 누르고 글자 지우기 - x , 앞으로 밀면서 지우기 - shift + x
 
 고급명령
 
 실행취소: u
-스크롤: ctrl + h, ctrl + b
 단어검색: /내용 , 다음 단어는 n 키를 누르면됨
 단어바꾸기: %s/찾는문자열/바꿀문자열 ex) %s/football/tennis
 Visual mode : 
@@ -141,6 +144,9 @@ sudo apt-get install apache2
 
 
 ==================================================
+rm index.html  - Permission denied 가 나오면 관리자 권한으로 지워야함, sudo rm index.html
+sudo vi index.html
+
 
 mkdir ex03/p04 - 이렇게 만들수 없음 
 mkdir -p ./ex03/p04 - 이렇게 해야함
@@ -150,6 +156,7 @@ mkdir -p /home/ubuntu/ex02/p02
 
 텍스트 파일 읽기모드 (수정불가, 변경하진 않고 보고만 싶을 때 쓰는 기능)
 cat apache2.conf
+cat test2.txt
 
 / - 검색, 그리고 n 키 누르면 검색어의 다음 부분보여줌
 
@@ -158,8 +165,25 @@ tail -3 apache2.conf - 마지막 3줄만 보여줌
 tail +100 apache2.conf - 100번째 줄 부터 끝까지
 
 
+파일 복사하기(copy)
+cp test.txt A-copy.txt
+cp test.txt test/. 현재 폴더에 있는 test.txt 를 현재 폴더의 다른 폴더인 test 폴더 안에 복사
+
+현재 폴더에 있는 test.txt 를 현재 폴더의 sub 폴더안으로 복사 - cp test.txt ./sub/test.txt
+서브 폴더안으로 파일 이름 바꾸지않고 복사 - cp test.txt ./sub/.
+
+cp kirin.txt ../. 이 같은 이름의 파일 상위폴더로 복사
+
+폴더(디렉토리) 복사를 위해서는 -r (recursive)를 넣어줘야-r 
+cp -r sub sub2 (디렉토리 복사)
+
+파일이동 및 이름변경(move)
+
+mv - move 라는 개념인데 파일 이름을 변경할 때도 많이씀
+mv test.txt test2.txt 라고 쓰면 test2.txt 로 파일이름이 바뀜
 
 
+파일 링크 
 
 
 
