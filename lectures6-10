@@ -1,1 +1,34 @@
+*** Shell 이란? ***
+
+PUTTY 가 AWS Server(하나의 가상기계 혹은 컴퓨터라고 생각하면됨) 에 접속을 함 SSH 포트를 이용해서 접속,
+접속하면 첫 화면 : ubuntu@ip-address:~/test$ : 명령어를 기다리고 있는 상태
+LINUX(aws server)의 SHELL이 PUTTY 에게 이 프롬프트를 표시하라고 가르쳐준것, 
+이 SHELL 은 PUTTY 가 준 명령을 받아서 (ex, ls -al), 쉘은 리눅스에게 물어보고 정보를 받아서 다시 PUTTY에게 건네줌.
+이런역할은 하는것이 SHELL 이다.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
