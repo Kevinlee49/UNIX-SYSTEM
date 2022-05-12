@@ -110,7 +110,13 @@ fc -l 1100 : 1100 번 명령부터 끝까지 명령한거 보여줌
 
 *** prompt setting ***
 ubuntu@ip-address:~$
+echo $PS1
+copy paste - mouth right button
 
+PS1='TEST> '
+TEST>  가 프롬프트로 나옴
+PS1='$USER@$PWD> '
+PS1='\u@$PWD> '
 
 
 
