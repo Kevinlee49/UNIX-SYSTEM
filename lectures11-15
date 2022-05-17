@@ -1,5 +1,286 @@
-
 *** GCC ***
+
+-o : target file
+-c : object file, 
+ar 명령: ar -crv
+-I : include folder path
+-L : library link folder 
+
+소스파일 
+main.c; fact.c; sum.c;
+
+오브젝트파일
+main.o; fact.o; sum.o;
+
+실행파일
+
+오브젝트파일이 있는 이유
+통합을 해서 하나의 파일로 만들어서 프로세스를 처리하는 것보다
+각각 개별로 파일을 만들어서 처리를 하는게 훨씬 쉬움(에러가능성을 더 줄여줌)
+
+sum.c 소스파일에서 수정이 일어났을때 sum.o 파일만 수정을 하고 앞의 main.c 와 fact.c 와 같이 실행파일만 만들어내면됨
+
+gcc main.c fact.c -o factout : using source files
+
+gcc -c main.c fact.c
+ls -al -> main.o ; fact.o
+vi fact.o : containing non-readable text 
+gcc main.o fact.o -o ofiles_out : using object files
+ 
+*라이브러리들 묶기
+.c .o - 파일들이 너무 많을 때 하나로 묶어주는 라이브러리
+
+*vi main.c
+
+#include <stdio.h>
+#include "fact.h"
+
+int main(){
+	int n,f;
+	printf("input number:");
+	scanf("%d",&n);
+	f = fact(n);
+	printf("%d!=%d\n",n,f);
+	return 0;
+}
+
+*vi fact.c
+
+#include "fact.h"
+
+int fact(int n){
+          if(n==1)
+	       return 1;
+          else 
+	       return fact(n-1)*n;
+
+*vi fact.h
+
+int fact(int n);
+
+*vi sum.c
+#include "sum.h"
+
+int sum(int a, int b){
+	return a+b;
+}
+
+*vi sum.h
+
+int sum(int,int);
+
+gcc -c main.c fact.c sum.c : 각각에 대해서 출력
+한꺼번에 묶기 - gcc main.o fact.o sum.o -o out3
+./out3
+
+!이 상태에서 오브젝트 파일을 변경하고 싶을 때,
+vi main.c : 여기서 변경하고
+gcc -c main.c
+gcc main.o fact.o sum.o -o out3
+./out3 : 변경완료
+
+라이브러리로 묶기 : ar -crv libmymath.a fact.o sum.o
+라이브러리를 사용해서 컴파일하기
+
+gcc main.c -L. -l mymath # -L. : current directory, -l : 어디에 묶여있는지 알려주는 옵션, mymath 만 쳐도됨 lib 생략가능
+gcc main.c -L. -l -o out4
+
+폴더 정리하기
+mkdir lib
+mkdir obj
+mkdir inc
+mv *.a ./lib/.
+mv *.o ./obj/.
+mv *.h ./inc/.
+
+gcc main.c -I inc -L lib -l -o out4
+
+*vi main.c
+
+#include <stdio.h>
+#include "fact.h"
+
+int main(){
+	int n,f,s;
+	printf("input number:");
+	scanf("%d",&n);
+	f = fact(n);
+	printf("%d! == %d\n",n,f);
+	s = sum(n,10);
+	printf("%d + 10 == %d\n",n,s);
+	return 0;
+}
+
+sum.c 파일을 중간에 바꿔줬음(#include part 안써줘서) 바꿔줬을 때 다시 설정해줘야함
+gcc -c sum.c -I inc -o ./obj/sum.o
+ar -crv ./lib/libmymath.a ./obj/sum.o ./obj/fact.o
+cd lib
+ls -al : check update
+
+* GCC & make
+
+복잡한 gcc 옵션을 컴파일 할 때마다 지정하면 불편함
+컴파일에 규칙을 만들어서 저장해놓은것이 make 파일
+
+형태
+-매크로정의
+-타겟1: 의존성1-1 의존성1-2
+	- 명령 1-1
+	- 명령 1-2
+-타겟2: 의존성 2-1 의존성 2-2
+	- 명령 2-1
+	- 명령 2-2
+
+-매크로 
+	- 선언: 이름=값
+	- 사용: $(이름)
+-주요타겟
+	- all, clean, etc
+
+
+vi Makefile - target 이 필요(보통 all 을 씀)
+
+all : 	
+	gcc -c fact.c -o ./obj/fact.o -I inc
+	gcc -c sum.c -o ./obj/sum.o -I inc : 1개씩 따로 output 을 지정해줘야함
+
+	아니면 
+
+	gcc -c fact.c sum.c -I inc
+	mv fact.o ./obj/.
+	mv sum.o ./obj/.
+
+sudo apt install make
+make
+
+all : 	
+	gcc -c fact.c -o ./obj/fact.o -I inc
+	gcc -c sum.c -o ./obj/sum.o -I inc : 1개씩 따로 output 을 지정해줘야함
+
+	아니면 
+
+	gcc -c fact.c sum.c -I inc
+	mv fact.o ./obj/.
+	mv sum.o ./obj/.
+
+	ar -crv ./lib/libmymath.a fact.o sum.o
+
+라이브러리 만들기
+all : 	
+	gcc -c fact.c -o ./obj/fact.o -I inc
+	gcc -c sum.c -o ./obj/sum.o -I inc : 1개씩 따로 output 을 지정해줘야함
+
+	아니면 
+
+	gcc -c fact.c sum.c -I inc
+	mv fact.o ./obj/.
+	mv sum.o ./obj/.
+
+	ar -crv ./lib/libmymath.a ./obj/fact.o ./obj/sum.o
+
+라이브러리 합치고 컴파일하기
+all : 	
+	gcc -c fact.c -o ./obj/fact.o -I inc
+	gcc -c sum.c -o ./obj/sum.o -I inc : 1개씩 따로 output 을 지정해줘야함
+
+	아니면 
+
+	gcc -c fact.c sum.c -I inc
+	mv fact.o ./obj/.
+	mv sum.o ./obj/.
+
+	ar -crv ./lib/libmymath.a ./obj/fact.o ./obj/sum.o
+	
+	gcc main.c -L ./lib -I ./inc -l mymath -o out5
+
+
+#이제 vi main.c 파일에서 내용을 변경하고 나서 쉽게 make 만 입력해도 업데이트된 출력이 나옴
+#컴파일이 굉장히 쉬워진것
+
+#Make 에 옵션, 타겟 넣어주기( clean: 파일 삭제 기능)
+all : 	
+	gcc -c fact.c -o ./obj/fact.o -I inc
+	gcc -c sum.c -o ./obj/sum.o -I inc : 1개씩 따로 output 을 지정해줘야함
+
+	아니면 
+
+	gcc -c fact.c sum.c -I inc
+	mv fact.o ./obj/.
+	mv sum.o ./obj/.
+
+	ar -crv ./lib/libmymath.a ./obj/fact.o ./obj/sum.o
+	
+	gcc main.c -L ./lib -I ./inc -l mymath -o out5
+
+clean: 
+	rm ./lib/*.a
+	rm ./obj/*.o
+	rm out
+
+make
+make clean
+
+===========================================
+
+out 에서 컴파일만 하고 싶을 때
+
+all : out
+
+out: ./lib/libmymath.a
+	gcc main.c -L ./lib -I ./inc -l mymath -o out5
+
+clean: 
+	rm ./lib/*.a
+	rm ./obj/*.o
+	rm out
+
+./obj/fact.o: fact.c ./inc/fact.h
+	gcc -c fact.c -I inc -o ./obj/fact.o
+./obj/sum.o: sum.c ./inc/sum.h
+	gcc -c sum.c -I inc -o ./obj/sum.o
+./lib/libmymath.a: ./obj/sum.o ./obj/fact.o
+	ar -crv ./lib/libmymath.a ./obj/fact.o ./obj/sum.o
+
+
+폴더 이름이 변경되었을 때
+inc -> include
+
+vi Makefile - 여기에 변수를 만들기(매크로)
+INC=./include
+
+all : out
+
+out: ./lib/libmymath.a
+	gcc main.c -L ./lib -I $(INC) -l mymath -o out5
+
+clean: 
+	rm ./lib/*.a
+	rm ./obj/*.o
+	rm out
+
+./obj/fact.o: fact.c $(INC)/fact.h
+	gcc -c fact.c -I $(INC) -o ./obj/fact.o
+./obj/sum.o: sum.c $(INC)/sum.h
+	gcc -c sum.c -I $(INC) -o ./obj/sum.o
+./lib/libmymath.a: ./obj/sum.o ./obj/fact.o
+	ar -crv ./lib/libmymath.a ./obj/fact.o ./obj/sum.o
+
+
+GCC
+
+콘솔 코드
+	- man console_codes
+	- 커서이동코드: \e[y,xH
+	- 화면삭제코드: \e[2J
+
+ncurses 라이브러리
+
+	-설치: sudo apt-get install libncurses5-dev libncursesw5-dev
+	-컴파일: gcc filename -lncurses
+
+
+int main(){
+	printf("\e[5;5H");  - \e 좌표이동시켜줌, ; - 특정위치로 이동
 
 
 
