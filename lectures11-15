@@ -266,21 +266,105 @@ clean:
 	ar -crv ./lib/libmymath.a ./obj/fact.o ./obj/sum.o
 
 
-GCC
+*** Unix utility ***
 
-콘솔 코드
-	- man console_codes
-	- 커서이동코드: \e[y,xH
-	- 화면삭제코드: \e[2J
+1. wc: -c 바이트수(chracter count), -m 문자수, -l line count, -w word count
+wc abc
+wc -m abc
+wc -w abc
 
-ncurses 라이브러리
+2. sort: 파일정렬
 
-	-설치: sudo apt-get install libncurses5-dev libncursesw5-dev
-	-컴파일: gcc filename -lncurses
+sort -r abc
+sort -k 2 abc
+sort -n -k 2 abc
+
+	-r: 역순정렬
+	-k: 필드정렬
+	-n: 숫자사용시
+	-n -k: 가격을 50, 100 이 차이를 인식함
 
 
-int main(){
-	printf("\e[5;5H");  - \e 좌표이동시켜줌, ; - 특정위치로 이동
+3. split: 파일분할
+split -3 abc : 3줄씩 나눔 -> abc 파일만 있던게, abc b xaa xab xac 이렇게 출력됨
+cat xaa 해보면 위에 3개가 들어가있음
+
+	-b n: per n bytes
+	-n: per n lines
+
+sort abc | split -3
+ls
+cat xaa -> 알파벳 순으로 바뀌어 정렬되어 출력됨
+sort abc | split -b 10 : 10바이트씩 분할해서 출력
+
+
+4. uniq: 인접한 행이 중복된 경우 삭제
+
+-sort와 결합해 사용
+sort abc | uniq : 중복된 것들 모두 버림
+sort abc | uniq -u: 중복된 행들 빼고 중복없는 행만 표시
+sort abc | uniq -d: 중복된 행만 표시
+sort abc | uniq -c: 중복횟수 보기
+
+sort abc | uniq > c : 중복되는거 삭제후 c 라는 파일에 넣기
+cat c
+
+5. cut
+- 필드 잘라내기
+- 탭으로 필드 구분
+
+cut -c 1-5 abc : -c n-m: 행별로 n~m번째 문자 추출
+cut -f 1 abc : -f n: n번 필드 추출
+who - who 등의 명령과 함께 사용
+who | cut -c 1-8 -> ubuntu, ubuntu(id만 출력)
+who | cut -f 1
+
+ls -al | cut -c 1-7 -> directory authority 만 출력
+
+6. paste - 2개의 파일 연결하기(기본적으로 필드 단위로 붙임)
+paste abc weight
+paste -d : abc weight // -d A: A를 필드 구분자로 추가
+paste -d : c weight
+
+중간삽입하기 - 일단 c 를 먼저 분리 - 그리고 paste 로 붙이기
+cut -f 1 c >c1
+cut -f 2 c >c2
+cut -f 3 c >c3
+cat c1
+cat c2
+cat c3
+
+paste c1 weight c2 c3 - complete
+paste c1 weight c2 c3 > e
+cat e
+
+
+7. dd
+-블록 단위로 파일 복사 및 변환
+dd conv=ucase if=e of=f : ucase 소문자를 대문자로
+dd conv=lcase if=f of=g : lcase 대문자를 소문자로
+
+dd bs=1024 conv=ucase if=e of=f
+
+8. sed - 텍스트 스트림 편집, 파일들을 크기별로 sorting 하고 싶을 때
+
+ls -al | sed 's/ubuntu/kim/g' : ubuntu 가 모두 kim 으로 바껴서 나옴
+ls -al | sed 's/May/Jan/g' : May -> Jan 
+
+ls -al | sort -k 5 : 제대로 작동하진 않음
+ls -al | cut -f cut 1 : 이것도 제대로 인식되지 않음, 사이사이가 탭이 아니라 스페이스로 띄어쓰기가 되어있기 때문
+ls -al | sed 's/ /_/g' : space -> underbar 처리
+ls -al | sed 's/ /\t/g' : 이렇게 쓰면 스페이스가 2번 인곳은 2번 탭이 들어감, 즉 이것도 제대로 인식될수없음
+
+이럴 때 정규표현식을 사용 - 빈칸이 반복될 때 한번만 처리
+
+ls -al | sed -r 's/ +/_/g' : 빈칸이 1개이상인건 모두 _ 1개로 처리
+ls -al | sed -r 's/ +/\t/g' : 빈칸이 1개이상인건 모두 tab 1개로 처리
+
+ls -al | sed -r 's/ +/\t/g' | sort -k 5 : 파일 크기별로 sorting - 이것도 완벽하진 않음 -n 옵션 필요
+ls -al | sed -r 's/ +/\t/g' | sort -n -k 5 
+ls -al | sed -r 's/ +/\t/g' | sort -n -k 5 | more : checking
+
 
 
 
