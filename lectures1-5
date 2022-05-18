@@ -32,6 +32,63 @@ Session 에서 Save 해주기, Saved sessions - linux 로 이름 만들어주고
 사용하지 않을 때 실행을 중지시키고 싶을 때 - EC2 - 내 server locaton check, 설정위치마다 다르게 나옴. - 인스턴스(실행 중) 클릭 -> 초마다 돈이 나가므로(유료일 경우) 꺼줘야함. 
 작업 or 위에 인스턴스 상태를 누르면 편집 창에 값 running 을 stopping 으로 바꾸면됨
 
+linux 시스템관리
+
+-부팅과 종료
+리부팅
+sudo shutdown -r : 시간이 걸림
+sudo shutdown -r 0 : 바로종료
+종료
+sudo shutdown 0 : 종료, AWS 에서 다시 인스턴스 실행해야함 - 바뀐 새로운 IP를 받아서 putty에서도 변경해줘야함
+
+
+-사용자 정보확인
+whereis passwd
+more/etc/passwd
+
+
+-사용자추가
+sudo adduser julie
+julie 로 로그인을 할려면 password 로 로그인을 해야함 - 근데 AWS server는 password login을 막아놓음 
+푸는 방법 -  cd /etc/ssh/ - sudo vi sshd_config - PasswordAuthentication no -> yes - save
+sudo service sshd restart 
+
+PuTTY configuration - Host name remaining only IP address - SSH -Auth - deleting Private key file - season - open
+login as: julie - complete
+
+사용자 추가 됐는지 확인
+more /etc/passwd - 내용에 julie 가 추가되어있는걸 확인 가능
+
+
+
+-사용자삭제
+sudo userdel julie
+more /etc/passwd
+sudo rm -r julie
+sudo passwd julie - 사용자 줄리의 패스워드 바꾸기
+
+
+-사용자에게 메시지 전달
+wall
+Hello~~
+My name is ~~~
+이렇게 쓰고 ctrl + d 누르면 모든 사용자에게 메시지 전달함
+
+-그룹생성/수정/삭제
+groupadd ; sudo groupadd students
+groupmod ; sudo groupmod students
+groupdel ; sudo groupdel students
+
+AWS 탈퇴
+서버종료
+결제수단삭제
+해지 
+내계정-> 계정 닫기
+다음부터 쓸 수 없음 새로운 계정을 만들어야함, 인스턴스만 잘 종료해놓으면(나중에 유료결제이므로) 나중에도 쓸 수 있음
+인스턴스 상태 - 중지하고 중지완료되면 종료
+
+
+
 ===================
 
 ubuntu@ip-address
